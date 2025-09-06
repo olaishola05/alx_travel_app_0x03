@@ -130,12 +130,6 @@ class PaymentInitiateSerializer(serializers.Serializer):
         except Booking.DoesNotExist:
             raise serializers.ValidationError("Booking not found.")
 class PaymentSerializer(serializers.ModelSerializer):
-    # payment_id = serializers.UUIDField(read_only=True)
-    # booking_id = serializers.UUIDField()
-    # user_id = serializers.UUIDField()
-    # amount = serializers.DecimalField(max_digits=10, decimal_places=2)
-    # status = serializers.ChoiceField(choices=Payment.PAYMENT_STATUS_CHOICES, default='pending')
-    # transaction_id = serializers.CharField(max_length=255, allow_blank=True)
     booking_details = serializers.SerializerMethodField()
 
     class Meta:

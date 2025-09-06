@@ -133,3 +133,46 @@ class Payment(models.Model):
         if not self.chapa_tx_ref:
             self.chapa_tx_ref = f"booking_{self.booking_id.booking_id}_{uuid.uuid4().hex[:8]}"
         super().save(*args, **kwargs)
+        
+class RequestLog(models.Model):
+    ip_address = models.GenericIPAddressField()
+    timestamp = models.DateTimeField(auto_now_add=True, db_index=True)
+    path = models.TextField(max_length=255, db_index=True)
+    is_routable = models.BooleanField(default=False)
+    country = models.CharField(max_length=100, blank=True)
+    city = models.CharField(max_length=100, blank=True)
+
+    class Meta:
+        ordering = ['-timestamp']
+        verbose_name = "Request Log"
+        verbose_name_plural = "Request Logs"
+
+    def __str__(self):
+        return f"[{self.timestamp.strftime('%Y-%m-%d %H:%M:%S')}] - {self.ip_address}: {self.path}"
+      
+      
+      
+class BlockedIP(models.Model):
+    ip_address = models.GenericIPAddressField(unique=True)
+    blocked_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-blocked_at']
+        verbose_name = "Blocked IP"
+        verbose_name_plural = "Blocked IPs"
+
+    def __str__(self):
+        return f"{self.ip_address} blocked at {self.blocked_at.strftime('%Y-%m-%d %H:%M:%S')}"
+
+class SuspiciousIP(models.Model):
+    ip_address = models.GenericIPAddressField(unique=True)
+    detected_at = models.DateTimeField(auto_now_add=True)
+    reason = models.TextField()
+
+    class Meta:
+        ordering = ['-detected_at']
+        verbose_name = "Suspicious IP"
+        verbose_name_plural = "Suspicious IPs"
+
+    def __str__(self):
+        return f"{self.ip_address} detected at {self.detected_at.strftime('%Y-%m-%d %H:%M:%S')} - Reason: {self.reason}"

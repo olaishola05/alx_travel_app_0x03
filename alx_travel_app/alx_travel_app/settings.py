@@ -14,6 +14,8 @@ from pathlib import Path
 import environ
 import os
 from datetime import timedelta
+from celery.schedules import crontab
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -29,7 +31,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 env = environ.Env()
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
-DEBUG = env("DEBUG")
+DEBUG = env("DEBUG") != 'False'
 SECRET_KEY = env("SECRET_KEY")
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
@@ -72,10 +74,11 @@ REST_FRAMEWORK = {
   'DEFAULT_PERMISSION_CLASSES': [
     'rest_framework.permissions.IsAuthenticated',
   ],
-    'DEFAULT_AUTHENTICATION_CLASSES': [
+  'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ],
+  'EXCEPTION_HANDLER': 'listings.utils.custom_ratelimit_exception_handler',
 }
 
 AUTH_USER_MODEL = 'listings.User'
@@ -83,7 +86,11 @@ AUTH_USER_MODEL = 'listings.User'
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django_ip_geolocation.middleware.IpGeolocationMiddleware',
+    'django_ratelimit.middleware.RatelimitMiddleware',
+    'listings.middleware.RequestLoggingMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -91,6 +98,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+RATELIMIT_VIEW = 'listings.views.rate_limiting_error'
 CORS_ALLOW_ALL_ORIGINS = True
 
 ROOT_URLCONF = 'alx_travel_app.urls'
@@ -119,6 +127,17 @@ WSGI_APPLICATION = 'alx_travel_app.wsgi.application'
 # CELERY_RESULT_SERIALIZER = 'json'
 # CELERY_TIMEZONE = 'UTC'
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://127.0.0.1:6379/1',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    }
+}
+
+IPGEOLOCATION_CACHE_TIMEOUT = 60 * 60 * 24
 
 # RabbitMQ config
 # CELERY BROKER CONFIGURATION
@@ -129,6 +148,12 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'UTC'
 
+CELERY_BEAT_SCHEDULE = {
+  'flag-suspicious-ips-hourly': {
+    'task': 'listings.tasks.flag_suspicious_ips',
+    'schedule': crontab(minute=0),
+},
+}
 
 # Email Backend Configuration Prod
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -138,27 +163,39 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = env("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
 
-
-# Development Email Backend Configuration
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
+# Development Email Backend Configuration 
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+DATABASES ={}
+if 'DATABASE_URL' in os.environ:
+  DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': env("DB_NAME"),
-        'USER': env("DB_USER"),
-        'PASSWORD': env("DB_PASSWORD"),
-        'HOST': env("DB_HOST"),
-        'PORT': env("DB_PORT"),
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-        }
-    }
+  'default': {
+    'ENGINE': 'django.db.backends.sqlite3',
+  }
 }
+# DATABASES = {
+    # 'default': {
+        # 'ENGINE': 'django.db.backends.mysql',
+        # 'NAME': env("DB_NAME"),
+        # 'USER': env("DB_USER"),
+        # 'PASSWORD': env("DB_PASSWORD"), 
+        # 'HOST': env("DB_HOST"),
+        # 'PORT': env("DB_PORT"),
+        # 'OPTIONS': {
+            # 'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+        # }
+    # }
+# }
 
 
 # Password validation
@@ -194,6 +231,8 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
+
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 STATIC_URL = 'static/'
 
