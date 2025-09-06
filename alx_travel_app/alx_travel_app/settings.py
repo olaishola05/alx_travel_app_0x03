@@ -34,7 +34,7 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 DEBUG = env("DEBUG") != 'False'
 SECRET_KEY = env("SECRET_KEY")
 
-ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
+ALLOWED_HOSTS = ['olaish05.pythonanywhere.com','127.0.0.1']
 
 CHAPA_SECRET_KEY = os.environ.get('CHAPA_SECRET_KEY')
 CHAPA_PUBLIC_KEY = os.environ.get('CHAPA_PUBLIC_KEY')
