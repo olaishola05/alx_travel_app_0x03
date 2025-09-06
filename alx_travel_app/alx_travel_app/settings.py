@@ -174,9 +174,9 @@ STORAGES = {
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-DATABASES ={}
-if 'DATABASE_URL' in os.environ:
-  DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
+# DATABASES ={}
+# if 'DATABASE_URL' in os.environ:
+  # DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
 
 DATABASES = {
   'default': {
