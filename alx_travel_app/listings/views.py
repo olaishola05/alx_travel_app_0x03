@@ -87,7 +87,7 @@ class UserRegistrationView(viewsets.ModelViewSet):
                 "error": str(e)
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@method_decorator(ratelimit(key='ip', rate='10/m', method='GET', block=True), name='dispatch')
+# @method_decorator(ratelimit(key='ip', rate='10/m', method='GET', block=True), name='dispatch')
 class ListingViewSet(viewsets.ModelViewSet):
     """API Endpoint for Listing all properties & other crud operations"""
     

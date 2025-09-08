@@ -78,7 +78,7 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ],
-  'EXCEPTION_HANDLER': 'listings.utils.custom_ratelimit_exception_handler',
+  # 'EXCEPTION_HANDLER': 'listings.utils.custom_ratelimit_exception_handler',
 }
 
 AUTH_USER_MODEL = 'listings.User'
@@ -89,7 +89,7 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     # 'django_ip_geolocation.middleware.IpGeolocationMiddleware',
-    'django_ratelimit.middleware.RatelimitMiddleware',
+    # 'django_ratelimit.middleware.RatelimitMiddleware',
     # 'listings.middleware.RequestLoggingMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -98,7 +98,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-RATELIMIT_VIEW = 'listings.views.rate_limiting_error'
+# RATELIMIT_VIEW = 'listings.views.rate_limiting_error'
 CORS_ALLOW_ALL_ORIGINS = True
 
 ROOT_URLCONF = 'alx_travel_app.urls'
@@ -127,33 +127,33 @@ WSGI_APPLICATION = 'alx_travel_app.wsgi.application'
 # CELERY_RESULT_SERIALIZER = 'json'
 # CELERY_TIMEZONE = 'UTC'
 
-CACHES = {
-    'default': {
-        'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': 'redis://127.0.0.1:6379/1',
-        'OPTIONS': {
-            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-        }
-    }
-}
+# CACHES = {
+    # 'default': {
+        # 'BACKEND': 'django_redis.cache.RedisCache',
+        # 'LOCATION': 'redis://127.0.0.1:6379/1',
+        # 'OPTIONS': {
+            # 'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        # }
+    # }
+# }
 
-IPGEOLOCATION_CACHE_TIMEOUT = 60 * 60 * 24
+# IPGEOLOCATION_CACHE_TIMEOUT = 60 * 60 * 24
 
 # RabbitMQ config
 # CELERY BROKER CONFIGURATION
-CELERY_BROKER_URL = 'amqp://guest:guest@localhost:5672//'
-CELERY_RESULT_BACKEND = 'rpc://'
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TIMEZONE = 'UTC'
+# CELERY_BROKER_URL = 'amqp://guest:guest@localhost:5672//'
+# CELERY_RESULT_BACKEND = 'rpc://'
+# CELERY_TASK_SERIALIZER = 'json'
+# CELERY_ACCEPT_CONTENT = ['json']
+# CELERY_RESULT_SERIALIZER = 'json'
+# CELERY_TIMEZONE = 'UTC'
 
-CELERY_BEAT_SCHEDULE = {
-  'flag-suspicious-ips-hourly': {
-    'task': 'listings.tasks.flag_suspicious_ips',
-    'schedule': crontab(minute=0),
-},
-}
+# CELERY_BEAT_SCHEDULE = {
+  # 'flag-suspicious-ips-hourly': {
+    # 'task': 'listings.tasks.flag_suspicious_ips',
+    # 'schedule': crontab(minute=0),
+# },
+# }
 
 # Email Backend Configuration Prod
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
