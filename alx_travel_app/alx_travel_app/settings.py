@@ -15,7 +15,6 @@ import environ
 import os
 from datetime import timedelta
 from celery.schedules import crontab
-import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -86,7 +85,7 @@ AUTH_USER_MODEL = 'listings.User'
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+    # 'whitenoise.middleware.WhiteNoiseMiddleware', 
     'django.contrib.sessions.middleware.SessionMiddleware',
     # 'django_ip_geolocation.middleware.IpGeolocationMiddleware',
     # 'django_ratelimit.middleware.RatelimitMiddleware',
