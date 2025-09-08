@@ -163,11 +163,11 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = env("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
 
-STORAGES = {
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-    },
-}
+# STORAGES = {
+    # "staticfiles": {
+        # "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    # },
+# }
 # Development Email Backend Configuration 
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
@@ -243,6 +243,10 @@ CSRF_TRUSTED_ORIGINS = ['https://olaish05.pythonanywhere.com']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 STATIC_URL = 'static/'
+
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
